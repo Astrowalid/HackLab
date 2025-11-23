@@ -30,14 +30,18 @@ fun AppNavigationHost() {
 
     NavHost(
         navController = navController,
-        startDestination = AppNavigation.ProductList.route
+        startDestination = AppNavigation.Login.route
     ) {
         composable(AppNavigation.Login.route) {
             LoginScreen(
-                onLoginSuccess = { email ->
+                onLoginSuccess = {
                     navController.navigate(AppNavigation.ProductList.route) {
                         popUpTo(AppNavigation.Login.route) { inclusive = true }
                     }
+                },
+                onSignUpClick = {
+                    // TODO: Implémentation de SignUp plus tard
+                    println("Sign Up clicked")
                 }
             )
         }

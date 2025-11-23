@@ -24,7 +24,8 @@ import com.example.hacklab.R
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String) -> Unit = {}
+    onLoginSuccess: () -> Unit = {}, // ✅ Changé : pas besoin du email, juste callback
+    onSignUpClick: () -> Unit = {}
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -136,7 +137,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-
+        // error message
         errorMessage?.let { error ->
             Text(
                 text = error,
@@ -158,14 +159,14 @@ fun LoginScreen(
                     errorMessage = "Invalid email format!"
                 } else {
                     errorMessage = null
-                    onLoginSuccess(email)
+                    onLoginSuccess() // ✅ Appelle le callback pour naviguer
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDE0000), // Rouge
+                containerColor = Color(0xFFDE0000),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(8.dp)
@@ -179,7 +180,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // sign up
+        // sign up link
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -191,12 +192,12 @@ fun LoginScreen(
                 fontSize = 14.sp
             )
             TextButton(
-                onClick = { },
+                onClick = { onSignUpClick() }, // ✅ Callback pour SignUp
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
                     "Sign Up",
-                    color = Color(0xFFDE0000), // Rouge
+                    color = Color(0xFFDE0000),
                     fontSize = 14.sp
                 )
             }

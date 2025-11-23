@@ -107,7 +107,7 @@ object ProductRepository {
             name = "USB Cryptex",
             author = "By @SecureKey",
             price = 49.99,
-            category = "Encryption",
+            category = "Exploits",
             imageResId = R.drawable.product_6,
             description = "A hardened encryption tool for secure data storage and transfer. Features military-grade encryption and tamper-proof design.",
             specifications = mapOf(
