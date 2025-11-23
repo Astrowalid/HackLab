@@ -38,13 +38,13 @@ fun MainScreen() {
                 when {
                     currentRoute == AppNavigation.Profile.route ||
                             currentRoute == AppNavigation.Card.route -> {
-                        TopNavigationBarType2(
-                            navController = navController, title = currentScreenTitle
-                        )
+//                        TopNavigationBarType2(
+//                            navController = navController, title = currentScreenTitle
+//                        )
                     }
 
                     else -> {
-                        TopNavigationBar(navController = navController,)
+                      //  TopNavigationBar(navController = navController,)
                     }
                 }
             }
