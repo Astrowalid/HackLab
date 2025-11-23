@@ -1,13 +1,16 @@
 package com.example.hacklab.screens
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -16,49 +19,73 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hacklab.R
+import com.example.hacklab.data.ProductRepository
 
-// Modèle détaillé du produit
-data class ProductDetail(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val price: Double,
-    val imageResId: Int,
-    val specifications: Map<String, String>,
-    val safetyDisclaimer: String
-)
 
-// Données de test
-val sampleProductDetail = ProductDetail(
-    id = 1,
-    name = "Stealth Recon Kit",
-    description = "A compact, Raspberry Pi-based tool for covert network reconnaissance and penetration testing. Includes pre-configured scripts for passive and active scanning, credential harvesting, and exploit execution.",
-    price = 149.99,
-    imageResId = R.drawable.hacklab,
-    specifications = mapOf(
-        "Platform" to "Raspberry Pi 4",
-        "Storage" to "64GB MicroSD",
-        "Connectivity" to "WiFi 802.11ac",
-        "Power" to "USB-C",
-        "Bluetooth" to "5.0"
-    ),
-    safetyDisclaimer = "This tool is intended for ethical hacking, security testing and educational purposes only. Use responsibly and within legal boundaries. We are not responsible for misuse or damage caused by this product."
-)
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     productId: Int? = 1,
     onBackClick: () -> Unit = {},
     onAddToCart: () -> Unit = {}
 ) {
-    // Utiliser les données de test pour l'instant
-    val product = sampleProductDetail
+    // ✅ Récupérer le produit par ID du repository
+    val product = ProductRepository.getProductById(productId ?: 1)
+
+    if (product == null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0A0A12)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Product not found",
+                color = Color.White,
+                fontSize = 20.sp
+            )
+        }
+        return
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF0A0A12))
     ) {
+        // ===== TOP APP BAR =====
+        TopAppBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(Color(0xFF0A0A12)),
+            title = {},
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = "Cart",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color(0xFF0A0A12)
+            )
+        )
+
         // ===== CONTENU SCROLLABLE =====
         LazyColumn(
             modifier = Modifier
@@ -84,16 +111,20 @@ fun ProductDetailScreen(
 
             // Spécifications
             item {
-                SpecificationsSection(
-                    specifications = product.specifications
-                )
+                if (product.specifications.isNotEmpty()) {
+                    SpecificationsSection(
+                        specifications = product.specifications
+                    )
+                }
             }
 
             // Safety Disclaimer
             item {
-                SafetyDisclaimerSection(
-                    disclaimer = product.safetyDisclaimer
-                )
+                if (product.safetyDisclaimer.isNotEmpty()) {
+                    SafetyDisclaimerSection(
+                        disclaimer = product.safetyDisclaimer
+                    )
+                }
             }
 
             // Espacement pour le bottom nav
@@ -122,7 +153,7 @@ fun ProductDetailImage(
             .padding(16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF5E6D3) // Fond beige clair comme dans l'image
+            containerColor = Color(0xFF323236)
         )
     ) {
         Image(
@@ -146,7 +177,6 @@ fun ProductDetailInfo(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Nom du produit
         Text(
             text = name,
             color = Color.White,
@@ -154,7 +184,6 @@ fun ProductDetailInfo(
             fontWeight = FontWeight.Bold
         )
 
-        // Description
         Text(
             text = description,
             color = Color(0xFFCCCCCC),
@@ -174,15 +203,13 @@ fun SpecificationsSection(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Titre "Specifications"
         Text(
             text = "Specifications",
-            color = Color(0xFFDE0000), // Rouge
+            color = Color(0xFFDE0000),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
 
-        // Grille des spécifications
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -236,15 +263,13 @@ fun SafetyDisclaimerSection(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Titre "Safety Disclaimer"
         Text(
             text = "Safety Disclaimer",
-            color = Color(0xFFFFC107), // Rouge
+            color = Color(0xFFFFC107),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
 
-        // Texte du disclaimer
         Text(
             text = disclaimer,
             color = Color(0xFFFFC107),
@@ -266,7 +291,6 @@ fun AddToCartButton(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Affichage du prix
         Text(
             text = "Price",
             color = Color(0xFF999999),
@@ -280,14 +304,13 @@ fun AddToCartButton(
             fontWeight = FontWeight.Bold
         )
 
-        // Bouton "Add to Cart"
         Button(
             onClick = onAddToCart,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDE0000), // Rouge
+                containerColor = Color(0xFFDE0000),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(8.dp)

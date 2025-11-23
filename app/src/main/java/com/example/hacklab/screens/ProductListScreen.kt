@@ -23,60 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hacklab.R
+import com.example.hacklab.data.ProductRepository
 
-
-data class Product(
-    val id: Int,
-    val name: String,
-    val author: String,
-    val price: Double,
-    val category: String,
-    val imageResId: Int
-)
-
-
-val sampleProducts = listOf(
-    Product(
-        id = 1,
-        name = "Stealth Recon Toolkit",
-        author = "By @CyberNinja",
-        price = 49.99,
-        category = "Recon",
-        imageResId = R.drawable.hacklab_white
-    ),
-    Product(
-        id = 2,
-        name = "Advanced Exploit Suite",
-        author = "By @ShadowHacker",
-        price = 79.99,
-        category = "Exploits",
-        imageResId = R.drawable.hacklab_white
-    ),
-    Product(
-        id = 3,
-        name = "Post-Exploitation Framework",
-        author = "By @GhostSec",
-        price = 59.99,
-        category = "Post-Exploitation",
-        imageResId = R.drawable.hacklab
-    ),
-    Product(
-        id = 4,
-        name = "Network Mapper Pro",
-        author = "By @AnonOps",
-        price = 39.99,
-        category = "Recon",
-        imageResId = R.drawable.hacklab
-    ),
-    Product(
-        id = 5,
-        name = "Wireless Penetration Kit",
-        author = "By @NetHunter",
-        price = 69.99,
-        category = "Exploits",
-        imageResId = R.drawable.hacklab_white
-    ),
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +33,10 @@ fun ProductListScreen(
 ) {
     var selectedCategory: String? by remember { mutableStateOf(null) }
     var searchQuery by remember { mutableStateOf("") }
-    val filteredProducts = sampleProducts.filter { product ->
+
+    val allProducts = ProductRepository.sampleProducts
+
+    val filteredProducts = allProducts.filter { product ->
         (selectedCategory == null || product.category == selectedCategory) &&
                 (searchQuery.isEmpty() || product.name.contains(searchQuery, ignoreCase = true))
     }
@@ -170,7 +121,7 @@ fun ProductListScreen(
             items(filteredProducts) { product ->
                 ProductCard(
                     product = product,
-                    onClick = { onProductClick(product.id) }
+                    onClick = { onProductClick(product.id) } // ✅ Passe l'ID
                 )
             }
 
@@ -258,14 +209,14 @@ fun CategoriesRow(
 
 @Composable
 fun ProductCard(
-    product: Product,
+    product: com.example.hacklab.data.Product,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .height(180.dp),
+            .height(110.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF242847)
         ),
@@ -302,7 +253,7 @@ fun ProductCard(
 
                 Text(
                     text = "$${product.price}",
-                    color = Color.White,
+                    color = Color(0xFF999999),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )

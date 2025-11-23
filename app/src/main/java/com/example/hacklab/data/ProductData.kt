@@ -23,7 +23,7 @@ object ProductRepository {
             author = "By @CyberNinja",
             price = 49.99,
             category = "Recon",
-            imageResId = R.drawable.hacklab_white,
+            imageResId = R.drawable.product_1,
             description = "A compact, Raspberry Pi-based tool for covert network reconnaissance and penetration testing. Includes pre-configured scripts for passive and active scanning, credential harvesting, and exploit execution.",
             specifications = mapOf(
                 "Platform" to "Raspberry Pi 4",
@@ -40,7 +40,7 @@ object ProductRepository {
             author = "By @ShadowHacker",
             price = 79.99,
             category = "Exploits",
-            imageResId = R.drawable.hacklab_white,
+            imageResId = R.drawable.product_2,
             description = "Professional-grade exploitation framework with advanced payload generation and delivery mechanisms. Designed for authorized security assessments and penetration testing.",
             specifications = mapOf(
                 "Framework" to "Metasploit-based",
@@ -57,7 +57,7 @@ object ProductRepository {
             author = "By @GhostSec",
             price = 59.99,
             category = "Post-Exploitation",
-            imageResId = R.drawable.hacklab,
+            imageResId = R.drawable.product_3,
             description = "Comprehensive post-exploitation toolkit for maintaining access, privilege escalation, and data exfiltration in authorized environments.",
             specifications = mapOf(
                 "Languages" to "Python, Bash, PowerShell",
@@ -74,7 +74,7 @@ object ProductRepository {
             author = "By @AnonOps",
             price = 39.99,
             category = "Recon",
-            imageResId = R.drawable.hacklab,
+            imageResId = R.drawable.product_4,
             description = "Advanced network reconnaissance and mapping tool with passive and active scanning capabilities. Includes vulnerability detection and asset inventory.",
             specifications = mapOf(
                 "Scan Types" to "SYN, UDP, ICMP",
@@ -91,7 +91,7 @@ object ProductRepository {
             author = "By @NetHunter",
             price = 69.99,
             category = "Exploits",
-            imageResId = R.drawable.hacklab_white,
+            imageResId = R.drawable.product_5,
             description = "Specialized toolkit for wireless network security testing. Includes encryption cracking, rogue AP deployment, and client isolation attacks.",
             specifications = mapOf(
                 "Protocols" to "802.11 a/b/g/n/ac/ax",
@@ -102,6 +102,23 @@ object ProductRepository {
             ),
             safetyDisclaimer = "This tool is intended for ethical hacking and security testing purposes only. Use responsibly and within legal boundaries. The seller is not responsible for misuse or damage caused by this product."
         ),
+        Product(
+            id = 6,
+            name = "USB Cryptex",
+            author = "By @SecureKey",
+            price = 49.99,
+            category = "Encryption",
+            imageResId = R.drawable.product_6,
+            description = "A hardened encryption tool for secure data storage and transfer. Features military-grade encryption and tamper-proof design.",
+            specifications = mapOf(
+                "Encryption" to "AES-256, Twofish",
+                "Capacity" to "Varies by model (32GB - 2TB)",
+                "Interface" to "USB 3.0",
+                "Security" to "Hardware-based encryption, Brute-force protection",
+                "Compatibility" to "Windows, macOS, Linux"
+            ),
+            safetyDisclaimer = "This product provides strong data encryption. Ensure you remember your passwords as data recovery may not be possible without them. The seller is not responsible for lost data due to forgotten passwords."
+        )
     )
 
 
