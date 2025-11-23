@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.example.hacklab.screens.ProductDetailScreen
 import com.example.hacklab.screens.LoginScreen
 import androidx.compose.material3.MaterialTheme
-import com.example.hacklab.navigation.AppNavigationHost
+import com.example.hacklab.screens.AppNavigationHost
 import com.example.hacklab.screens.ProductListScreen
 import com.example.hacklab.ui.theme.Background
 import com.example.hacklab.ui.theme.HackLabTheme
