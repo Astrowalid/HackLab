@@ -9,9 +9,11 @@ import androidx.navigation.navArgument
 import com.example.hacklab.screens.ProductListScreen
 import com.example.hacklab.screens.ProductDetailScreen
 import com.example.hacklab.screens.LoginScreen
+import com.example.hacklab.screens.SplashScreen
 
 
 sealed class AppNavigation(val route: String) {
+    object Splash : AppNavigation("splash")
     object Card : AppNavigation("card")
     object GetStarted : AppNavigation("getstarted")
     object Profile : AppNavigation("profile")
@@ -30,8 +32,18 @@ fun AppNavigationHost() {
 
     NavHost(
         navController = navController,
-        startDestination = AppNavigation.Login.route
+        startDestination = AppNavigation.Splash.route
     ) {
+        composable(AppNavigation.Splash.route) {
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate(AppNavigation.Login.route) {
+                        popUpTo(AppNavigation.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(AppNavigation.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
