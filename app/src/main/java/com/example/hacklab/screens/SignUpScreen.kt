@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hacklab.R
+import com.example.hacklab.navigation.AppNavigation
 
 @Composable
 fun Signup(navController: NavController) {
@@ -142,6 +143,7 @@ fun Signup(navController: NavController) {
 
                 Button(
                     onClick = {
+
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -155,6 +157,7 @@ fun Signup(navController: NavController) {
 
                 Button(
                     onClick = {
+
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
