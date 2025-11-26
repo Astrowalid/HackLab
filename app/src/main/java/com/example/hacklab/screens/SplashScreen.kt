@@ -21,9 +21,6 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onSplashFinished: () -> Unit = {}
 ) {
-    // ===== ANIMATIONS =====
-
-    // Animation de scale (zoom) du logo
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -35,7 +32,7 @@ fun SplashScreen(
         label = "scale"
     )
 
-    // Animation de glow (lueur)
+
     val glow by infiniteTransition.animateFloat(
         initialValue = 0.3f,
         targetValue = 1f,
@@ -46,13 +43,13 @@ fun SplashScreen(
         label = "glow"
     )
 
-    // Démarrer le timer pour aller à LoginScreen après 3 secondes
+
     LaunchedEffect(Unit) {
         delay(3000) // 3 secondes
         onSplashFinished()
     }
 
-    // ===== UI =====
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,12 +57,10 @@ fun SplashScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // ===== LOGO AVEC GLOW =====
         Box(
             modifier = Modifier.size(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Glow background (cercle lumineux)
             Box(
                 modifier = Modifier
                     .size(200.dp)
@@ -76,7 +71,6 @@ fun SplashScreen(
                     )
             )
 
-            // Logo avec animation scale
             androidx.compose.foundation.Image(
                 painter = androidx.compose.ui.res.painterResource(id = R.drawable.hacklab_white),
                 contentDescription = "HackLab Logo",
@@ -88,7 +82,6 @@ fun SplashScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // ===== TEXTE =====
         Text(
             text = "HackLab",
             color = Color.White,
@@ -107,7 +100,6 @@ fun SplashScreen(
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // ===== LOADING DOTS ANIMATION =====
         LoadingDots()
     }
 }
@@ -116,7 +108,6 @@ fun SplashScreen(
 fun LoadingDots() {
     val infiniteTransition = rememberInfiniteTransition(label = "loading")
 
-    // Animation pour les 3 points
     val dot1Alpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
         targetValue = 1f,
@@ -151,7 +142,6 @@ fun LoadingDots() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Point 1
         Box(
             modifier = Modifier
                 .size(8.dp)
@@ -162,7 +152,6 @@ fun LoadingDots() {
                 .alpha(dot1Alpha)
         )
 
-        // Point 2
         Box(
             modifier = Modifier
                 .size(8.dp)
@@ -173,7 +162,6 @@ fun LoadingDots() {
                 .alpha(dot2Alpha)
         )
 
-        // Point 3
         Box(
             modifier = Modifier
                 .size(8.dp)
