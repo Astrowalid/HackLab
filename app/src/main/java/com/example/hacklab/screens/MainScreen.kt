@@ -12,8 +12,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.hacklab.components.BottomNavigationBar
+import com.example.hacklab.components.TopNavigationBar
 import com.example.hacklab.navigation.AppNavigation
-
 
 @Composable
 fun MainScreen() {
@@ -38,13 +38,10 @@ fun MainScreen() {
                 when {
                     currentRoute == AppNavigation.Profile.route ||
                             currentRoute == AppNavigation.Card.route -> {
-//                        TopNavigationBarType2(
-//                            navController = navController, title = currentScreenTitle
-//                        )
+                        TopNavigationBar(navController = navController,currentScreenTitle)
                     }
-
                     else -> {
-                      //  TopNavigationBar(navController = navController,)
+
                     }
                 }
             }
@@ -78,7 +75,6 @@ fun MainScreen() {
                         }
                     },
                     onSignUpClick = {
-                        // TODO: Implémentation de SignUp plus tard
                         println("Sign Up clicked")
                     }
                 )
@@ -94,7 +90,6 @@ fun MainScreen() {
                 )
             }
 
-
             composable(
                 route = AppNavigation.ProductDetail.route,
                 arguments = listOf(
@@ -105,37 +100,47 @@ fun MainScreen() {
 
                 ProductDetailScreen(
                     productId = productId,
-                    onBackClick = {
-                        navController.popBackStack()
+                    onBackClick = { navController.popBackStack() },
+                    onCartClick = {
+                        navController.navigate(AppNavigation.Card.route)
                     },
-                    onAddToCart = {
-                        println("✅ Produit $productId ajouté au panier")
-                    }
+                    navController = navController
+                )
+            }
+            composable(AppNavigation.Card.route) {
+                CartScreen(
+                    navController = navController
+                )
+            }
+
+            composable(AppNavigation.Profile.route) {
+                Profile(
+                    navController = navController
                 )
             }
         }
     }
 }
 
-    private fun shouldShowBottomBar(route: String?): Boolean {
-        val screensWithBottomBar = listOf(
-            AppNavigation.ProductList.route,
-            AppNavigation.Card.route,
-            AppNavigation.Profile.route,
-            AppNavigation.ProductDetail.route
-        )
-        return route in screensWithBottomBar
-    }
+private fun shouldShowBottomBar(route: String?): Boolean {
+    val screensWithBottomBar = listOf(
+        AppNavigation.ProductList.route,
+        AppNavigation.Card.route,
+        AppNavigation.Profile.route,
+        AppNavigation.ProductDetail.route
+    )
+    return route in screensWithBottomBar
+}
 
-    private fun getTitleForRoute(route: String?): String {
-        return when (route?.substringBefore('/')) {
-            AppNavigation.ProductList.route -> "Marketplace"
-            AppNavigation.Card.route -> "My Cart"
-            AppNavigation.Profile.route -> "My Profile"
-            AppNavigation.ProductDetail.route -> "Product Details"
-            AppNavigation.Login.route -> "Login"
-            AppNavigation.SignUp.route -> "Sign Up"
-            AppNavigation.GetStarted.route -> "Get Started"
-            else -> "HackLab"
-        }
+private fun getTitleForRoute(route: String?): String {
+    return when (route?.substringBefore('/')) {
+        AppNavigation.ProductList.route -> "Marketplace"
+        AppNavigation.Card.route -> "Cart"
+        AppNavigation.Profile.route -> "Profile"
+        AppNavigation.ProductDetail.route -> "Product Details"
+        AppNavigation.Login.route -> "Login"
+        AppNavigation.SignUp.route -> "Sign Up"
+        AppNavigation.GetStarted.route -> "Get Started"
+        else -> "HackLab"
     }
+}
