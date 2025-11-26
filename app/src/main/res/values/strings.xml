@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">HackLab</string>
+
+    <string name="Marketplace_txt">Marketplace</string>
+    <string name="Card_txt">Card</string>
+    <string name="Profile_txt">Profile</string>
+
 </resources>
