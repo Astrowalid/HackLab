@@ -7,13 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.hacklab.screens.ProductDetailScreen
-import com.example.hacklab.screens.LoginScreen
-import androidx.compose.material3.MaterialTheme
-import com.example.hacklab.screens.AppNavigationHost
-import com.example.hacklab.screens.ProductListScreen
+import com.example.hacklab.screens.MainScreen
 import com.example.hacklab.ui.theme.Background
-import com.example.hacklab.ui.theme.HackLabTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 color = Background
             ) {
 
-                AppNavigationHost()
+                MainScreen()
             }
         }
     }

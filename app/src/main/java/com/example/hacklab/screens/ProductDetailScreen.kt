@@ -18,19 +18,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.hacklab.R
+import androidx.navigation.NavController
+import com.example.hacklab.data.CartManager
 import com.example.hacklab.data.ProductRepository
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     productId: Int? = 1,
     onBackClick: () -> Unit = {},
-    onAddToCart: () -> Unit = {}
+    onCartClick: () -> Unit = {},
+    navController: NavController? = null
 ) {
-    // ✅ Récupérer le produit par ID du repository
     val product = ProductRepository.getProductById(productId ?: 1)
+    println("🔍 ProductDetailScreen - Product ID: $productId, Product: ${product?.name}")
+    // Observer le nombre d'articles dans le panier
+    val cartItemsCount by remember { derivedStateOf { CartManager.getCartItemsCount() } }
 
     if (product == null) {
         Column(
@@ -54,7 +57,6 @@ fun ProductDetailScreen(
             .fillMaxSize()
             .background(Color(0xFF0A0A12))
     ) {
-        // ===== TOP APP BAR =====
         TopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,13 +74,29 @@ fun ProductDetailScreen(
                 }
             },
             actions = {
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Cart",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                BadgedBox(
+                    badge = {
+                        if (cartItemsCount > 0) {
+                            Badge {
+                                Text(
+                                    text = cartItemsCount.toString(),
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    IconButton(onClick = {
+                       onCartClick()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Cart",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -86,13 +104,11 @@ fun ProductDetailScreen(
             )
         )
 
-        // ===== CONTENU SCROLLABLE =====
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
         ) {
-            // Image du produit
             item {
                 ProductDetailImage(
                     imageResId = product.imageResId,
@@ -100,7 +116,6 @@ fun ProductDetailScreen(
                 )
             }
 
-            // Infos du produit
             item {
                 ProductDetailInfo(
                     name = product.name,
@@ -109,7 +124,6 @@ fun ProductDetailScreen(
                 )
             }
 
-            // Spécifications
             item {
                 if (product.specifications.isNotEmpty()) {
                     SpecificationsSection(
@@ -118,7 +132,6 @@ fun ProductDetailScreen(
                 }
             }
 
-            // Safety Disclaimer
             item {
                 if (product.safetyDisclaimer.isNotEmpty()) {
                     SafetyDisclaimerSection(
@@ -127,16 +140,17 @@ fun ProductDetailScreen(
                 }
             }
 
-            // Espacement pour le bottom nav
             item {
                 Spacer(modifier = Modifier.height(100.dp))
             }
         }
 
-        // ===== BOUTON "ADD TO CART" (Fixed at bottom) =====
         AddToCartButton(
             price = product.price,
-            onAddToCart = onAddToCart
+            onAddToCart = {
+                println("🛒 Add to Cart button clicked for: ${product.name}")
+                CartManager.addToCart(product)
+            }
         )
     }
 }
@@ -298,7 +312,7 @@ fun AddToCartButton(
         )
 
         Text(
-            text = "$${price}",
+            text = "$${String.format("%.2f", price)}",
             color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
