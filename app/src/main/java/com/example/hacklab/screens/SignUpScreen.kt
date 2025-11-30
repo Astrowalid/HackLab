@@ -146,7 +146,7 @@ fun SignupScreen(
 
                 Button(
                     onClick = {
-
+                        onSignUpSuccess()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -158,9 +158,10 @@ fun SignupScreen(
                     Text("Sign Up")
                 }
 
+
                 Button(
                     onClick = {
-
+                        onLoginClick()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -175,9 +176,3 @@ fun SignupScreen(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun SignupPreview() {
-//    SignupScreen(navController = rememberNavController())
-//}

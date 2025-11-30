@@ -24,7 +24,7 @@ import com.example.hacklab.R
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit = {}, // ✅ Changé : pas besoin du email, juste callback
+    onLoginSuccess: () -> Unit = {},
     onSignUpClick: () -> Unit = {}
 ) {
 
@@ -159,7 +159,7 @@ fun LoginScreen(
                     errorMessage = "Invalid email format!"
                 } else {
                     errorMessage = null
-                    onLoginSuccess() // ✅ Appelle le callback pour naviguer
+                    onLoginSuccess()
                 }
             },
             modifier = Modifier

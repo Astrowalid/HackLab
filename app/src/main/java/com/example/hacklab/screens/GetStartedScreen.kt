@@ -25,7 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hacklab.R
 
 @Composable
-fun GetStarted(navController: NavController) {
+fun GetStarted(
+    onGetStartedClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +52,7 @@ fun GetStarted(navController: NavController) {
 
             Button(
                 onClick = {
-
+                    onGetStartedClick()
                 },
                 modifier = Modifier
                     .padding(16.dp)
@@ -68,11 +70,3 @@ fun GetStarted(navController: NavController) {
 
 
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun GetStartedPreview() {
-    GetStarted(navController = rememberNavController())
-}
-

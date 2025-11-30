@@ -93,6 +93,16 @@ fun MainScreen() {
                 )
             }
 
+            composable(AppNavigation.GetStarted.route) {
+                GetStarted(
+                    onGetStartedClick = {
+                        navController.navigate(AppNavigation.ProductList.route) {
+                            popUpTo(AppNavigation.GetStarted.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             composable(AppNavigation.ProductList.route) {
                 ProductListScreen(
                     onProductClick = { productId ->
