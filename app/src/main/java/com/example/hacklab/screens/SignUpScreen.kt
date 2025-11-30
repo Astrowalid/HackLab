@@ -1,177 +1,240 @@
 package com.example.hacklab.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.hacklab.R
-import com.example.hacklab.navigation.AppNavigation
 
 @Composable
 fun SignupScreen(
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
-
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage: String? by remember { mutableStateOf(null) }
+    var showPassword by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0A12)),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFF0A0A12))
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
+        // Logo
         Image(
             painter = painterResource(id = R.drawable.hacklab_white),
-            contentDescription = "Application logo",
+            contentDescription = "HackLab Logo",
+            modifier = Modifier
+                .width(100.dp)
+                .height(100.dp)
+        )
+
+        Spacer(modifier = Modifier.height(150.dp))
+
+        // Titre
+        Text(
+            text = "Create Account",
+            style = MaterialTheme.typography.headlineLarge,
+            color = Color.White,
+            fontSize = 32.sp
+        )
+
+        Spacer(modifier = Modifier.height(35.dp))
+
+        // Username
+        OutlinedTextField(
+            value = username,
+            onValueChange = {
+                username = it
+                errorMessage = null
+            },
+            label = { Text("Username", color = Color(0xFF999999)) },
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "Username",
+                    tint = Color(0xFF999999)
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .size(65.dp)
-                .padding(top = 25.dp)
+                .height(56.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFDE0000),
+                unfocusedBorderColor = Color(0xFF242847),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = Color(0xFFDE0000)
+            ),
+            shape = RoundedCornerShape(8.dp)
         )
-        Spacer(modifier = Modifier.height(180.dp))
 
-        Card(
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Email
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                errorMessage = null
+            },
+            label = { Text("Email", color = Color(0xFF999999)) },
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Email,
+                    contentDescription = "Email",
+                    tint = Color(0xFF999999)
+                )
+            },
             modifier = Modifier
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF0A0A12)
+                .fillMaxWidth()
+                .height(56.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFDE0000),
+                unfocusedBorderColor = Color(0xFF242847),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = Color(0xFFDE0000)
+            ),
+            shape = RoundedCornerShape(8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Password
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password", color = Color(0xFF999999)) },
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Lock,
+                    contentDescription = "Password",
+                    tint = Color(0xFF999999)
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = { showPassword = !showPassword }) {
+                    Icon(
+                        imageVector = if (showPassword)
+                            Icons.Default.Visibility
+                        else
+                            Icons.Default.VisibilityOff,
+                        contentDescription = "Toggle password",
+                        tint = Color(0xFF999999)
+                    )
+                }
+            },
+            visualTransformation = if (showPassword)
+                VisualTransformation.None
+            else
+                PasswordVisualTransformation(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFDE0000),
+                unfocusedBorderColor = Color(0xFF242847),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = Color(0xFFDE0000)
+            ),
+            shape = RoundedCornerShape(8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Error message
+        errorMessage?.let { error ->
+            Text(
+                text = error,
+                color = Color(0xFFDE0000),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(8.dp)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        // Sign Up button
+        Button(
+            onClick = {
+                if (username.isEmpty()) {
+                    errorMessage = "Enter your username!"
+                } else if (email.isEmpty()) {
+                    errorMessage = "Enter your email!"
+                } else if (password.isEmpty()) {
+                    errorMessage = "Enter your password!"
+                } else if (!email.contains("@")) {
+                    errorMessage = "Invalid email format!"
+                } else if (password.length < 6) {
+                    errorMessage = "Password must be at least 6 characters!"
+                } else {
+                    errorMessage = null
+                    onSignUpSuccess()
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFDE0000),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxSize()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(23.dp)
+            Text(
+                "Sign Up",
+                fontSize = 18.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Login link
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                "Already have an account? ",
+                color = Color(0xFF999999),
+                fontSize = 14.sp
+            )
+            TextButton(
+                onClick = { onLoginClick() },
+                contentPadding = PaddingValues(0.dp)
             ) {
-
                 Text(
-                    text = "Sign Up",
-                    color = Color.White,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    "Log In",
+                    color = Color(0xFFDE0000),
+                    fontSize = 14.sp
                 )
-
-                TextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username", color = Color(0xFF9194C7)) },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xE8434A70),
-                        unfocusedContainerColor = Color(0xFF242847),
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.Blue,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedLabelColor = Color.Blue,
-                        unfocusedLabelColor = Color.Gray,
-                    )
-                )
-
-                TextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email", color = Color(0xFF9194C7)) },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xE8434A70),
-                        unfocusedContainerColor = Color(0xFF242847),
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.Blue,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedLabelColor = Color.Blue,
-                        unfocusedLabelColor = Color.Gray,
-                    )
-                )
-
-                TextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password", color = Color(0xFF9194C7)) },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xE8434A70),
-                        unfocusedContainerColor = Color(0xFF242847),
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.Blue,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedLabelColor = Color.Blue,
-                        unfocusedLabelColor = Color.Gray,
-                    )
-                )
-
-                Button(
-                    onClick = {
-                        onSignUpSuccess()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFDE0000),
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Text("Sign Up")
-                }
-
-
-                Button(
-                    onClick = {
-                        onLoginClick()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF131326),
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Text("Login")
-                }
             }
         }
     }
