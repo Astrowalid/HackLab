@@ -96,10 +96,11 @@ fun Profile(navController: NavController){
         Column(
             modifier = Modifier.padding(16.dp),
         ){
-
             Button(
                 onClick = {
-
+                    navController.navigate(com.example.hacklab.navigation.AppNavigation.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
