@@ -75,7 +75,20 @@ fun MainScreen() {
                         }
                     },
                     onSignUpClick = {
-                        println("Sign Up clicked")
+                        navController.navigate(AppNavigation.SignUp.route)
+                    }
+                )
+            }
+
+            composable(AppNavigation.SignUp.route) {
+                SignupScreen(
+                    onSignUpSuccess = {
+                        navController.navigate(AppNavigation.GetStarted.route) {
+                            popUpTo(AppNavigation.SignUp.route) { inclusive = true }
+                        }
+                    },
+                    onLoginClick = {
+                        navController.popBackStack()
                     }
                 )
             }

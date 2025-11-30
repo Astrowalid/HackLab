@@ -37,7 +37,10 @@ import com.example.hacklab.R
 import com.example.hacklab.navigation.AppNavigation
 
 @Composable
-fun Signup(navController: NavController) {
+fun SignupScreen(
+    onSignUpSuccess: () -> Unit,
+    onLoginClick: () -> Unit
+) {
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -173,8 +176,8 @@ fun Signup(navController: NavController) {
     }
 }
 
-@Preview
-@Composable
-fun SignupPreview() {
-    Signup(navController = rememberNavController())
-}
+//@Preview
+//@Composable
+//fun SignupPreview() {
+//    SignupScreen(navController = rememberNavController())
+//}
