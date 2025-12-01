@@ -42,7 +42,6 @@
 
 - **Language**: Kotlin
 - **UI Framework**: Jetpack Compose
-- **Architecture**: MVVM (Model-View-ViewModel)
 - **Navigation**: Jetpack Navigation Component
 - **Design Tool**: Figma
 - **Logo Design**: Adobe Illustrator
@@ -62,7 +61,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/hacklab.git
+   git clone https://github.com/Astrowalid/hacklab.git
    cd hacklab
    ```
 
@@ -131,7 +130,6 @@ This project was developed as part of the Mobile Programming course during the 2
 ### Learning Objectives Achieved
 - ✅ UI implementation with Jetpack Compose
 - ✅ Navigation between screens
-- ✅ Iterator design pattern integration
 - ✅ Nullable variables usage
 - ✅ Modern Android development best practices
 
