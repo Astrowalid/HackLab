@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "252065123492",
+    "project_id": "hacklab-3006e",
+    "storage_bucket": "hacklab-3006e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252065123492:android:66191b3e8b7ed88f212a31",
+        "android_client_info": {
+          "package_name": "com.example.hacklab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252065123492-tlvuhpbnq75qvqh0jan0akh9rl6mhlf9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxzRR2kbNX55gponyDJINBrWHL_ATT5xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252065123492-tlvuhpbnq75qvqh0jan0akh9rl6mhlf9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -56,5 +56,5 @@ fun TopNavigationBar(navController: NavController,title:String) {
 @Preview(showBackground = true)
 @Composable
 fun TopNavigationBarTypePreview() {
-    TopNavigationBarType2(navController = rememberNavController(),title = "Preview")
+    TopNavigationBar(navController = rememberNavController(),title = "Preview")
 }

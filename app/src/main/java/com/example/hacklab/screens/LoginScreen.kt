@@ -21,13 +21,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hacklab.R
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onSignUpClick: () -> Unit = {}
 ) {
-
+    val auth = FirebaseAuth.getInstance()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage: String? by remember { mutableStateOf(null) }
@@ -151,15 +152,21 @@ fun LoginScreen(
         // login button
         Button(
             onClick = {
-                if (email.isEmpty()) {
+                if (email.isBlank()) {
                     errorMessage = "Enter your email!"
-                } else if (password.isEmpty()) {
+                } else if (password.isBlank()) {
                     errorMessage = "Enter your password!"
-                } else if (!email.contains("@")) {
-                    errorMessage = "Invalid email format!"
                 } else {
-                    errorMessage = null
-                    onLoginSuccess()
+                    // Firebase sign in
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                errorMessage = null
+                                onLoginSuccess()
+                            } else {
+                                errorMessage = task.exception?.localizedMessage ?: "Login failed"
+                            }
+                        }
                 }
             },
             modifier = Modifier
@@ -192,7 +199,7 @@ fun LoginScreen(
                 fontSize = 14.sp
             )
             TextButton(
-                onClick = { onSignUpClick() }, // ✅ Callback pour SignUp
+                onClick = { onSignUpClick() },
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(

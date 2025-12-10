@@ -21,12 +21,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hacklab.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 
 @Composable
 fun SignupScreen(
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
+    val auth = FirebaseAuth.getInstance()
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -182,20 +185,22 @@ fun SignupScreen(
         // Sign Up button
         Button(
             onClick = {
-                if (username.isEmpty()) {
-                    errorMessage = "Enter your username!"
-                } else if (email.isEmpty()) {
-                    errorMessage = "Enter your email!"
-                } else if (password.isEmpty()) {
-                    errorMessage = "Enter your password!"
-                } else if (!email.contains("@")) {
-                    errorMessage = "Invalid email format!"
-                } else if (password.length < 6) {
-                    errorMessage = "Password must be at least 6 characters!"
-                } else {
-                    errorMessage = null
-                    onSignUpSuccess()
-                }
+                // validation...
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Optionally set display name:
+                            val user = auth.currentUser
+                            val profileUpdates = userProfileChangeRequest {
+                                displayName = username
+                            }
+                            user?.updateProfile(profileUpdates)
+                            errorMessage = null
+                            onSignUpSuccess()
+                        } else {
+                            errorMessage = task.exception?.localizedMessage ?: "Signup failed"
+                        }
+                    }
             },
             modifier = Modifier
                 .fillMaxWidth()
