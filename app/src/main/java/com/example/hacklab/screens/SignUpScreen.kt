@@ -185,7 +185,22 @@ fun SignupScreen(
         // Sign Up button
         Button(
             onClick = {
-                // validation...
+                if (username.isBlank()) {
+                    errorMessage = "Enter your username"
+                    return@Button
+                }
+                if (email.isBlank()) {
+                    errorMessage = "Enter your email"
+                    return@Button
+                }
+                if (!email.contains("@")) {
+                    errorMessage = "Invalid email format"
+                    return@Button
+                }
+                if (password.length < 6) {
+                    errorMessage = "Password must be at least 6 characters"
+                    return@Button
+                }
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
