@@ -28,15 +28,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,10 +50,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hacklab.R
 import com.example.hacklab.data.CartItem
 import com.example.hacklab.data.CartManager
+import com.example.hacklab.utils.NotificationHelper
 
 @Composable
 fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartManager.cartItems) {
 
+    val context = LocalContext.current
     val cartItems by remember { derivedStateOf { CartManager.cartItems } }
 
     val subtotal = cartItems.sumOf { it.price * it.quantity }
@@ -59,6 +64,21 @@ fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartMana
     val total = subtotal + shipping + taxes
 
     val agreedToTerms = remember { mutableStateOf(false) }
+    var hasNotified by remember { mutableStateOf(false) }
+
+    LaunchedEffect(total) {
+        if (total > 100 && !hasNotified) {
+            NotificationHelper.showNotification(
+                context,
+                "Budget Alert",
+                "Your cart total has exceeded $100!",
+                123 // Unique ID for this notification
+            )
+            hasNotified = true
+        } else if (total <= 100) {
+            hasNotified = false // Reset if the total goes back down
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -328,7 +348,3 @@ fun CartScreenPreview() {
         ), onRemove = {}
     )
 }
-
-
-
-
