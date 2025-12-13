@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.CountDownTimer
 import android.os.IBinder
+import com.example.hacklab.utils.NotificationHelper
 
 class TimeoutService : Service() {
 
@@ -16,6 +17,12 @@ class TimeoutService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        // Créer le canal de notification dès la création du service
+        NotificationHelper.createNotificationChannel(this)
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startTimer()
@@ -30,10 +37,19 @@ class TimeoutService : Service() {
             }
 
             override fun onFinish() {
-                // Envoyer un broadcast à l'application
+                // 1. Envoyer la notification
+                NotificationHelper.showNotification(
+                    this@TimeoutService,
+                    "Session expirée",
+                    "Vous avez été déconnecté pour inactivité.",
+                    1001 // ID unique pour cette notif
+                )
+
+                // 2. Envoyer un broadcast à l'application
                 val intent = Intent(ACTION_TIMEOUT)
-                intent.setPackage(packageName) // Sécurité : restreindre à notre app
+                intent.setPackage(packageName)
                 sendBroadcast(intent)
+                
                 stopSelf()
             }
         }.start()
