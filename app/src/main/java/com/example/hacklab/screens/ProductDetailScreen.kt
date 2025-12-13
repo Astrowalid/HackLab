@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hacklab.R
+import com.example.hacklab.data.CartManager
+import com.example.hacklab.data.ProductRepository
 import com.example.hacklab.utils.NotificationHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,24 +38,40 @@ fun ProductDetailScreen(
 ) {
     val context = LocalContext.current
     
-    // Exemple de données produit (normalement récupérées via un ViewModel)
-    val productTitle = "Product $productId"
-    val productPrice = "$${100 + (productId ?: 0)}"
-    val productDescription = "Ceci est une description détaillée du produit. Elle explique les caractéristiques et avantages du produit."
+    // Retrieve product details using the ID
+    val product = productId?.let { ProductRepository.getProductById(it) }
+
+    if (product == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0A0A12)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Product not found",
+                color = Color.White,
+                fontSize = 18.sp
+            )
+        }
+        return
+    }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { 
-                    // Action ajout au panier
+                    // Ajoute le produit au panier
+                    CartManager.addToCart(product)
+
                     Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
                     
                     // Envoyer une notification locale
                     NotificationHelper.showNotification(
                         context,
                         "Produit ajouté !",
-                        "Le produit $productTitle a été ajouté à votre panier.",
-                        productId ?: 2000 // ID unique basé sur le produit
+                        "Le produit ${product.name} a été ajouté à votre panier.",
+                        productId
                     )
                 },
                 containerColor = Color(0xFFDE0000),
@@ -77,11 +95,26 @@ fun ProductDetailScreen(
                     .height(300.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.design), // Image placeholder
-                    contentDescription = null,
+                    painter = painterResource(id = product.imageResId),
+                    contentDescription = product.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
+                
+                // Bouton retour
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopStart)
+                        .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -89,16 +122,23 @@ fun ProductDetailScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top
                 ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = product.name,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = product.author,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
                     Text(
-                        text = productTitle,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = productPrice,
+                        text = "$${product.price}",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFDE0000)
@@ -132,11 +172,64 @@ fun ProductDetailScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = productDescription,
+                    text = product.description,
                     fontSize = 14.sp,
                     color = Color.Gray,
                     lineHeight = 20.sp
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Specifications
+                if (product.specifications.isNotEmpty()) {
+                    Text(
+                        text = "Specifications",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    product.specifications.forEach { (key, value) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = key, color = Color.Gray, fontSize = 14.sp)
+                            Text(text = value, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Disclaimer
+                if (product.safetyDisclaimer.isNotEmpty()) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF242847)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "Disclaimer",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFF9800)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = product.safetyDisclaimer,
+                                fontSize = 12.sp,
+                                color = Color.LightGray
+                            )
+                        }
+                    }
+                }
+                
+                // Padding pour le FAB
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }
