@@ -11,5 +11,6 @@ data class ProductCart(
     val description: String,
     val price: Double,
     val imageResId: Int,
+    val imageUrl: String = "",
     val quantity: Int = 1
 )

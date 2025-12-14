@@ -14,10 +14,14 @@ import androidx.navigation.navArgument
 import com.example.hacklab.components.BottomNavigationBar
 import com.example.hacklab.components.TopNavigationBar
 import com.example.hacklab.navigation.AppNavigation
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hacklab.viewmodel.ProductViewModel
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+
+    val productViewModel: ProductViewModel = viewModel()
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
@@ -105,6 +109,7 @@ fun MainScreen() {
 
             composable(AppNavigation.ProductList.route) {
                 ProductListScreen(
+                    viewModel = productViewModel,
                     onProductClick = { productId ->
                         navController.navigate(
                             AppNavigation.ProductDetail.createRoute(productId)
@@ -123,6 +128,7 @@ fun MainScreen() {
 
                 ProductDetailScreen(
                     productId = productId,
+                    viewModel = productViewModel,
                     onBackClick = { navController.popBackStack() },
                     onCartClick = {
                         navController.navigate(AppNavigation.Card.route)

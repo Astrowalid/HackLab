@@ -13,7 +13,7 @@ import com.example.hacklab.data.dao.FavoriteDao
 
 @Database(
     entities = [User::class, ProductCart::class, FavoriteProduct::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hacklab.R
 import com.example.hacklab.data.CartItem
 import com.example.hacklab.data.CartManager
+import coil.compose.AsyncImage
 
 @Composable
 fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartManager.cartItems) {
@@ -212,14 +213,40 @@ fun CartItemCard(item: CartItem, onRemove: () -> Unit) {
                     .background(Color(0xFF242847)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = item.imageResId),
-                    contentDescription = "${item.name} image",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
+
+                if (item.imageUrl.isNotEmpty()) {
+
+                    coil.compose.AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = "${item.name} image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.product_1),
+                        error = painterResource(id = R.drawable.product_1)
+                    )
+                } else if (item.imageResId != 0) {
+
+                    Image(
+                        painter = painterResource(id = item.imageResId),
+                        contentDescription = "${item.name} image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.product_1),
+                        contentDescription = "${item.name} image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))

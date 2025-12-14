@@ -19,8 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.hacklab.data.CartManager
-import com.example.hacklab.data.ProductRepository
+import com.example.hacklab.R
+import com.example.hacklab.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,11 +30,12 @@ fun ProductDetailScreen(
     productId: Int? = 1,
     onBackClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
-    navController: NavController? = null
+    navController: NavController? = null,
+    viewModel: ProductViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
-    val product = ProductRepository.getProductById(productId ?: 1)
-    println("🔍 ProductDetailScreen - Product ID: $productId, Product: ${product?.name}")
-    // Observer le nombre d'articles dans le panier
+    val viewModel: ProductViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val product = viewModel.getProductById(productId ?: 1)
+    println("ProductDetailScreen - Product ID: $productId, Product: ${product?.name}")
     val cartItemsCount by remember { derivedStateOf { CartManager.getCartItemsCount() } }
 
     if (product == null) {
@@ -112,6 +115,7 @@ fun ProductDetailScreen(
             item {
                 ProductDetailImage(
                     imageResId = product.imageResId,
+                    imageUrl = product.imageUrl,
                     productName = product.name
                 )
             }
@@ -158,6 +162,7 @@ fun ProductDetailScreen(
 @Composable
 fun ProductDetailImage(
     imageResId: Int,
+    imageUrl: String = "",
     productName: String
 ) {
     Card(
@@ -170,12 +175,30 @@ fun ProductDetailImage(
             containerColor = Color(0xFF323236)
         )
     ) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = productName,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
-        )
+        if (imageUrl.isNotEmpty()) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = productName,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+                placeholder = painterResource(id = R.drawable.product_1),
+                error = painterResource(id = R.drawable.product_1)
+            )
+        } else if (imageResId != 0) {
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = productName,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.product_1),
+                contentDescription = productName,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }
 

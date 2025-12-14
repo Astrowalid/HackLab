@@ -89,6 +89,7 @@ fun Product.toProductCart(): ProductCart {
         description = this.description,
         price = this.price,
         imageResId = this.imageResId,
+        imageUrl = this.imageUrl,
         quantity = 1
     )
 }
@@ -100,6 +101,7 @@ fun Product.toCartItem(): CartItem {
         description = this.description,
         price = this.price,
         imageResId = this.imageResId,
+        imageUrl = this.imageUrl,
         quantity = 1
     )
 }
@@ -111,6 +113,7 @@ fun ProductCart.toCartItem(): CartItem {
         description = this.description,
         price = this.price,
         imageResId = this.imageResId,
+        imageUrl = this.imageUrl,
         quantity = this.quantity
     )
 }

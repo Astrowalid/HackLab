@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -44,6 +44,13 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.transport.api)
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:${room_version}")
     implementation("androidx.room:room-ktx:$room_version")

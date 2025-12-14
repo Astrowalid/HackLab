@@ -23,18 +23,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hacklab.R
-import com.example.hacklab.data.ProductRepository
+import com.example.hacklab.viewmodel.ProductViewModel
+import coil.compose.AsyncImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
-    onProductClick: (Int) -> Unit = {}
+    onProductClick: (Int) -> Unit = {},
+    viewModel: ProductViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     var selectedCategory: String? by remember { mutableStateOf(null) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val allProducts = ProductRepository.sampleProducts
+    val allProducts = viewModel.products
+    val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
 
     val filteredProducts = allProducts.filter { product ->
         (selectedCategory == null || product.category == selectedCategory) &&
@@ -48,7 +52,6 @@ fun ProductListScreen(
             .fillMaxSize()
             .background(Color(0xFF0A0A12))
     ) {
-
         TopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,14 +65,12 @@ fun ProductListScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Image(
                         painter = painterResource(id = R.drawable.hacklab_white),
                         contentDescription = "HackLab Logo",
                         modifier = Modifier.size(50.dp),
                         contentScale = ContentScale.Fit
                     )
-
 
                     IconButton(onClick = { }) {
                         Icon(
@@ -86,7 +87,6 @@ fun ProductListScreen(
             )
         )
 
-
         SearchBar(
             query = searchQuery,
             onQueryChange = { searchQuery = it },
@@ -96,7 +96,6 @@ fun ProductListScreen(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
 
         CategoriesRow(
             categories = categories,
@@ -111,23 +110,53 @@ fun ProductListScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(filteredProducts) { product ->
-                ProductCard(
-                    product = product,
-                    onClick = { onProductClick(product.id) } // ✅ Passe l'ID
-                )
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFFDE0000))
             }
+        }
+        else if (errorMessage != null) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Error: $errorMessage",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { viewModel.loadProducts() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFDE0000)
+                    )
+                ) {
+                    Text("Retry")
+                }
+            }
+        }
+        else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(filteredProducts) { product ->
+                    ProductCard(
+                        product = product,
+                        onClick = { onProductClick(product.id) }
+                    )
+                }
 
-
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
     }
@@ -229,20 +258,35 @@ fun ProductCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Card(
-                modifier = Modifier
-                    .size(150.dp),
+                modifier = Modifier.size(150.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Image(
-                    painter = painterResource(id = product.imageResId),
-                    contentDescription = product.name,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (product.imageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.product_1),
+                        error = painterResource(id = R.drawable.product_1)
+                    )
+                } else if (product.imageResId != 0) {
+                    Image(
+                        painter = painterResource(id = product.imageResId),
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.product_1),
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
-
 
             Column(
                 modifier = Modifier
@@ -250,14 +294,12 @@ fun ProductCard(
                     .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Text(
                     text = "$${product.price}",
                     color = Color(0xFF999999),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
-
 
                 Text(
                     text = product.name,
@@ -266,7 +308,6 @@ fun ProductCard(
                     fontWeight = FontWeight.Bold,
                     maxLines = 2
                 )
-
 
                 Text(
                     text = product.author,
