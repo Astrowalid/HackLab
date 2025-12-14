@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.hacklab" />
+                  <option name="mobileSdkAppId" value="1:252065123492:android:66191b3e8b7ed88f212a31" />
+                  <option name="projectId" value="hacklab-3006e" />
+                  <option name="projectNumber" value="252065123492" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

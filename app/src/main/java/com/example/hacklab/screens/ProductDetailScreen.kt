@@ -10,9 +10,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,11 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.hacklab.data.CartManager
 import com.example.hacklab.R
-import com.example.hacklab.viewmodel.ProductViewModel
-import com.example.hacklab.data.ProductRepository
+import com.example.hacklab.data.CartManager
 import com.example.hacklab.utils.NotificationHelper
+import com.example.hacklab.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,14 +40,10 @@ fun ProductDetailScreen(
     navController: NavController? = null,
     viewModel: ProductViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
-    val viewModel: ProductViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     val product = viewModel.getProductById(productId ?: 1)
     println("ProductDetailScreen - Product ID: $productId, Product: ${product?.name}")
     val cartItemsCount by remember { derivedStateOf { CartManager.getCartItemsCount() } }
     val context = LocalContext.current
-
-    // Retrieve product details using the ID
-    val product = productId?.let { ProductRepository.getProductById(it) }
 
     if (product == null) {
         Column(
@@ -79,7 +76,7 @@ fun ProductDetailScreen(
                         context,
                         "Produit ajouté !",
                         "Le produit ${product.name} a été ajouté à votre panier.",
-                        productId
+                        product.id
                     )
                 },
                 containerColor = Color(0xFFDE0000),
@@ -102,12 +99,21 @@ fun ProductDetailScreen(
                     .fillMaxWidth()
                     .height(300.dp)
             ) {
-                Image(
-                    painter = painterResource(id = product.imageResId),
-                    contentDescription = product.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (product.imageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = product.imageResId),
+                        contentDescription = product.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
 
                 // Bouton retour
                 IconButton(
@@ -123,9 +129,10 @@ fun ProductDetailScreen(
                         tint = Color.White
                     )
                 }
-            },
-            actions = {
                 BadgedBox(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp),
                     badge = {
                         if (cartItemsCount > 0) {
                             Badge {
@@ -139,7 +146,7 @@ fun ProductDetailScreen(
                     }
                 ) {
                     IconButton(onClick = {
-                       onCartClick()
+                        onCartClick()
                     }) {
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
@@ -149,61 +156,28 @@ fun ProductDetailScreen(
                         )
                     }
                 }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFF0A0A12)
+            }
+
+            ProductDetailInfo(
+                name = product.name,
+                description = product.description,
+                price = product.price
             )
-        )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-        ) {
-            item {
-                ProductDetailImage(
-                    imageResId = product.imageResId,
-                    imageUrl = product.imageUrl,
-                    productName = product.name
+            if (product.specifications.isNotEmpty()) {
+                SpecificationsSection(
+                    specifications = product.specifications
                 )
             }
 
-            item {
-                ProductDetailInfo(
-                    name = product.name,
-                    description = product.description,
-                    price = product.price
+            if (product.safetyDisclaimer.isNotEmpty()) {
+                SafetyDisclaimerSection(
+                    disclaimer = product.safetyDisclaimer
                 )
             }
 
-            item {
-                if (product.specifications.isNotEmpty()) {
-                    SpecificationsSection(
-                        specifications = product.specifications
-                    )
-                }
-            }
-
-            item {
-                if (product.safetyDisclaimer.isNotEmpty()) {
-                    SafetyDisclaimerSection(
-                        disclaimer = product.safetyDisclaimer
-                    )
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
-            }
+            Spacer(modifier = Modifier.height(100.dp))
         }
-
-        AddToCartButton(
-            price = product.price,
-            onAddToCart = {
-                println("🛒 Add to Cart button clicked for: ${product.name}")
-                CartManager.addToCart(product)
-            }
-        )
     }
 }
 

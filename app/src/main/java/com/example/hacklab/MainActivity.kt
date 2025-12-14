@@ -75,13 +75,14 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainScreen()
                 }
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Background),
-                color = Background
-            ) {
-                MainScreen()
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Background),
+                    color = Background
+                ) {
+                    MainScreen()
+                }
             }
         }
     }
