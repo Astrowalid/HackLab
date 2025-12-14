@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -54,12 +54,12 @@ import coil.compose.AsyncImage
 import com.example.hacklab.utils.NotificationHelper
 
 @Composable
-fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartManager.cartItems) {
+fun CartScreen(navController: NavController, cartItems: List<CartItem> = CartManager.cartItems) {
 
     val context = LocalContext.current
-    val cartItems by remember { derivedStateOf { CartManager.cartItems } }
+    val currentCartItems by remember { derivedStateOf { CartManager.cartItems } }
 
-    val subtotal = cartItems.sumOf { it.price * it.quantity }
+    val subtotal = currentCartItems.sumOf { it.price * it.quantity }
     val shipping = 0.00
     val taxes = subtotal * 0.08
     val total = subtotal + shipping + taxes
@@ -85,14 +85,12 @@ fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartMana
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF0A0A12))
-            .verticalScroll(rememberScrollState())
     ) {
 
-        if (cartItems.isEmpty()) {
+        if (currentCartItems.isEmpty()) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -109,10 +107,10 @@ fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartMana
                 )
             }
         } else {
-            Column(
+            LazyColumn(
                 modifier = Modifier.padding(horizontal = 6.dp)
             ) {
-                cartItems.forEach { item ->
+                items(currentCartItems) { item ->
                     CartItemCard(
                         item = item,
                         onRemove = {
@@ -121,91 +119,99 @@ fun CartScreen(navController: NavController,cartItems: List<CartItem> = CartMana
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
-            }
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(6.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(6.dp)
-                ) {
-                    OrderSummaryRow("Subtotal", "$${String.format("%.2f", subtotal)}")
-                    Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(6.dp)
+                        ) {
+                            OrderSummaryRow("Subtotal", "$${String.format("%.2f", subtotal)}")
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                    OrderSummaryRow("Shipping", "$${String.format("%.2f", shipping)}")
-                    Spacer(modifier = Modifier.height(8.dp))
+                            OrderSummaryRow("Shipping", "$${String.format("%.2f", shipping)}")
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                    OrderSummaryRow("Taxes", "$${String.format("%.2f", taxes)}")
+                            OrderSummaryRow("Taxes", "$${String.format("%.2f", taxes)}")
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                    OrderSummaryRow(
-                        "Total",
-                        "$${String.format("%.2f", total)}",
-                        isTotal = true
-                    )
+                            OrderSummaryRow(
+                                "Total",
+                                "$${String.format("%.2f", total)}",
+                                isTotal = true
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = agreedToTerms.value,
+                            onCheckedChange = { agreedToTerms.value = it },
+                            colors = androidx.compose.material3.CheckboxDefaults.colors(
+                                checkedColor = Color(0xFFDE0000),
+                                uncheckedColor = Color.Gray
+                            )
+                        )
+
+                        Text(
+                            text = "For educational use only",
+                            color = Color.White,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            if (agreedToTerms.value) {
+
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFDE0000),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        enabled = agreedToTerms.value && currentCartItems.isNotEmpty()
+                    ) {
+                        Text(
+                            text = "Checkout",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = agreedToTerms.value,
-                    onCheckedChange = { agreedToTerms.value = it },
-                    colors = androidx.compose.material3.CheckboxDefaults.colors(
-                        checkedColor = Color(0xFFDE0000),
-                        uncheckedColor = Color.Gray
-                    )
-                )
-
-                Text(
-                    text = "For educational use only",
-                    color = Color.White,
-                    fontSize = 14.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = {
-                    if (agreedToTerms.value) {
-
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFDE0000),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                enabled = agreedToTerms.value && cartItems.isNotEmpty()
-            ) {
-                Text(
-                    text = "Checkout",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -375,7 +381,3 @@ fun CartScreenPreview() {
         ), onRemove = {}
     )
 }
-
-
-
-

@@ -4,9 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -86,97 +85,106 @@ fun ProductDetailScreen(
             }
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF0A0A12))
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
         ) {
-            // Image du produit
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-            ) {
-                if (product.imageUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = product.imageUrl,
-                        contentDescription = product.name,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = product.imageResId),
-                        contentDescription = product.name,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                // Bouton retour
-                IconButton(
-                    onClick = onBackClick,
+            item {
+                // Image du produit
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.TopStart)
-                        .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50))
+                        .fillMaxWidth()
+                        .height(300.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-                BadgedBox(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp),
-                    badge = {
-                        if (cartItemsCount > 0) {
-                            Badge {
-                                Text(
-                                    text = cartItemsCount.toString(),
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
+                    if (product.imageUrl.isNotEmpty()) {
+                        AsyncImage(
+                            model = product.imageUrl,
+                            contentDescription = product.name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = product.imageResId),
+                            contentDescription = product.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    // Bouton retour
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.TopStart)
+                            .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                    BadgedBox(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp),
+                        badge = {
+                            if (cartItemsCount > 0) {
+                                Badge {
+                                    Text(
+                                        text = cartItemsCount.toString(),
+                                        color = Color.White,
+                                        fontSize = 12.sp
+                                    )
+                                }
                             }
                         }
-                    }
-                ) {
-                    IconButton(onClick = {
-                        onCartClick()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Cart",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                    ) {
+                        IconButton(onClick = {
+                            onCartClick()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }
 
-            ProductDetailInfo(
-                name = product.name,
-                description = product.description,
-                price = product.price
-            )
+            item {
+                ProductDetailInfo(
+                    name = product.name,
+                    description = product.description,
+                    price = product.price
+                )
+            }
 
             if (product.specifications.isNotEmpty()) {
-                SpecificationsSection(
-                    specifications = product.specifications
-                )
+                item {
+                    SpecificationsSection(
+                        specifications = product.specifications
+                    )
+                }
             }
 
             if (product.safetyDisclaimer.isNotEmpty()) {
-                SafetyDisclaimerSection(
-                    disclaimer = product.safetyDisclaimer
-                )
+                item {
+                    SafetyDisclaimerSection(
+                        disclaimer = product.safetyDisclaimer
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(100.dp))
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
+            }
         }
     }
 }
