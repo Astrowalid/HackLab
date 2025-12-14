@@ -1,19 +1,23 @@
 package com.example.hacklab.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +27,8 @@ import coil.compose.AsyncImage
 import com.example.hacklab.data.CartManager
 import com.example.hacklab.R
 import com.example.hacklab.viewmodel.ProductViewModel
+import com.example.hacklab.data.ProductRepository
+import com.example.hacklab.utils.NotificationHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +43,10 @@ fun ProductDetailScreen(
     val product = viewModel.getProductById(productId ?: 1)
     println("ProductDetailScreen - Product ID: $productId, Product: ${product?.name}")
     val cartItemsCount by remember { derivedStateOf { CartManager.getCartItemsCount() } }
+    val context = LocalContext.current
+
+    // Retrieve product details using the ID
+    val product = productId?.let { ProductRepository.getProductById(it) }
 
     if (product == null) {
         Column(
@@ -55,24 +65,62 @@ fun ProductDetailScreen(
         return
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF0A0A12))
-    ) {
-        TopAppBar(
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    // Ajoute le produit au panier
+                    CartManager.addToCart(product)
+
+                    Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
+
+                    // Envoyer une notification locale
+                    NotificationHelper.showNotification(
+                        context,
+                        "Produit ajouté !",
+                        "Le produit ${product.name} a été ajouté à votre panier.",
+                        productId
+                    )
+                },
+                containerColor = Color(0xFFDE0000),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Add to Cart")
+            }
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(Color(0xFF0A0A12)),
-            title = {},
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
+                .fillMaxSize()
+                .background(Color(0xFF0A0A12))
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Image du produit
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = product.imageResId),
+                    contentDescription = product.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // Bouton retour
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopStart)
+                        .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50))
+                ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+                        tint = Color.White
                     )
                 }
             },

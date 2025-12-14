@@ -1,5 +1,10 @@
 package com.example.hacklab.screens
 
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -22,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,12 +42,53 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.hacklab.cloudinary.uploadUserProfileImage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(navController: NavController){
+    val context = LocalContext.current
+   // var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    //var photoUrl by remember { mutableStateOf(currentUser?.photoUrl) }
+    var displayName by remember { mutableStateOf(currentUser?.displayName ?: "User") }
+    var email by remember { mutableStateOf(currentUser?.email ?: "") }
+
+//    val imagePicker = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri ->
+//        selectedImageUri = uri
+//    }
+
+//    LaunchedEffect(selectedImageUri) {
+//        selectedImageUri?.let { uri ->
+//            uploadUserProfileImage(context, uri) { imageUrl ->
+//                // Ici l'image est uploadée et URL mise à jour dans Firebase Auth
+//                Log.d("Profile", "Image uploaded: $imageUrl")
+//
+//                // Ajout d'un timestamp pour forcer le rafraîchissement du cache de Coil
+//                val timestamp = System.currentTimeMillis()
+//                val newUrl = if (imageUrl.contains("?")) "$imageUrl&t=$timestamp" else "$imageUrl?t=$timestamp"
+//
+//                photoUrl = Uri.parse(newUrl)
+//                selectedImageUri = null
+//
+//                Toast.makeText(context, "Photo de profil mise à jour !", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +101,10 @@ fun Profile(navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(R.drawable.default_user),
+                painter = rememberAsyncImagePainter(
+                    model = R.drawable.default_user,
+                    contentScale = ContentScale.Crop
+                ),
                 contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(120.dp)
@@ -63,7 +113,7 @@ fun Profile(navController: NavController){
             )
 
             Text(
-                "John Doe",
+                text = displayName,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -71,7 +121,7 @@ fun Profile(navController: NavController){
             )
 
             Text(
-                "john.doe@email.com",
+                text = email,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 4.dp)
@@ -79,7 +129,7 @@ fun Profile(navController: NavController){
 
             Button(
                 onClick = {
-
+                    // Logique pour modifier le profil (ex: ouvrir une dialogue)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,6 +144,13 @@ fun Profile(navController: NavController){
             }
         }
 
+//        Button(
+//            onClick = { imagePicker.launch("image/*") },
+//            modifier = Modifier.padding(top = 12.dp)
+//        ) {
+//            Text("Change Profile Image")
+//        }
+
         SettingsList(Modifier.padding(horizontal = 16.dp))
 
         Column(
@@ -101,6 +158,9 @@ fun Profile(navController: NavController){
         ){
             Button(
                 onClick = {
+
+                    FirebaseAuth.getInstance().signOut()
+
                     navController.navigate(com.example.hacklab.navigation.AppNavigation.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }

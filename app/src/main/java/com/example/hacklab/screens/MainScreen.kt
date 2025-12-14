@@ -3,6 +3,7 @@ package com.example.hacklab.screens
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -16,6 +17,9 @@ import com.example.hacklab.components.TopNavigationBar
 import com.example.hacklab.navigation.AppNavigation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hacklab.viewmodel.ProductViewModel
+import com.example.hacklab.utils.SessionManager
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MainScreen() {
@@ -35,6 +39,30 @@ fun MainScreen() {
     val showBars = currentRoute !in screensWithoutBars
 
     val currentScreenTitle = getTitleForRoute(currentRoute)
+
+    // Observer le timeout de session
+    LaunchedEffect(Unit) {
+        SessionManager.timeoutFlow.collectLatest {
+            // Déconnexion Firebase
+            FirebaseAuth.getInstance().signOut()
+
+            // Redirection vers Login
+            // On vérifie qu'on n'est pas déjà sur l'écran de login ou signup pour éviter les boucles
+            if (currentRoute != AppNavigation.Login.route && currentRoute != AppNavigation.SignUp.route) {
+                navController.navigate(AppNavigation.Login.route) {
+                    popUpTo(0) { inclusive = true } // Vider la stack de navigation
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
+    // Si on navigue manuellement vers Login, on peut arrêter le timer si on le souhaite
+    LaunchedEffect(currentRoute) {
+        if (currentRoute == AppNavigation.Login.route) {
+            SessionManager.stopTimer()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -74,6 +102,8 @@ fun MainScreen() {
             composable(AppNavigation.Login.route) {
                 LoginScreen(
                     onLoginSuccess = {
+                        // Démarrer la session après connexion réussie
+                        SessionManager.startUserSession()
                         navController.navigate(AppNavigation.ProductList.route) {
                             popUpTo(AppNavigation.Login.route) { inclusive = true }
                         }
@@ -87,6 +117,8 @@ fun MainScreen() {
             composable(AppNavigation.SignUp.route) {
                 SignupScreen(
                     onSignUpSuccess = {
+                         // Démarrer la session après inscription réussie
+                        SessionManager.startUserSession()
                         navController.navigate(AppNavigation.GetStarted.route) {
                             popUpTo(AppNavigation.SignUp.route) { inclusive = true }
                         }
